@@ -337,6 +337,8 @@ const ProductsList = () => {
               value={searchTerm}
               onChange={(e) => {
                 const newSearchTerm = e.target.value;
+                // 添加搜索日志
+                console.log('搜索关键词:', newSearchTerm);
                 setSearchTerm(newSearchTerm);
                 updateUrlParams(newSearchTerm, filters);
               }}
