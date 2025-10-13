@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { ThemeProvider, createTheme, Box, Typography, TextField, Button, Checkbox, FormControlLabel, AppBar, Toolbar, Divider, Grid, IconButton } from '@mui/material';
 import Search from '@mui/icons-material/Search';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
@@ -50,426 +50,8 @@ const darkTheme = createTheme({
 });
 
 const ProductsList = () => {
-  // 模拟数据
-  // 模拟数据，添加额外字段以匹配参考图片样式
-  const mockProducts =[
-  {
-    "id": "content-001",
-    "creator": "Adam",
-    "title": "Yellow green coat",
-    "pricingOption": 0,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_1.jpeg",
-    "price": 50
-  },
-  {
-    "id": "content-002",
-    "creator": "Benny",
-    "title": "Brown Anorak",
-    "pricingOption": 1,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_2.png",
-    "price": 30
-  },
-  {
-    "id": "content-003",
-    "creator": "Catlin",
-    "title": "Block shape mini bag",
-    "pricingOption": 2,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_3.jpeg",
-    "price": 15
-  },
-  {
-    "id": "content-004",
-    "creator": "Dan",
-    "title": "Tartan mini dress",
-    "pricingOption": 1,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_4.png",
-    "price": 300
-  },
-  {
-    "id": "content-005",
-    "creator": "Emily",
-    "title": "Pink training suit",
-    "pricingOption": 2,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_5.png",
-    "price": 200.5
-  },
-  {
-    "id": "content-006",
-    "creator": "Felix",
-    "title": "Denim jump suit",
-    "pricingOption": 1,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_6.png",
-    "price": 30
-  },
-  {
-    "id": "content-007",
-    "creator": "Gina",
-    "title": "Denim shirt",
-    "pricingOption": 1,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_7.jpeg",
-    "price": 100
-  },
-  {
-    "id": "content-008",
-    "creator": "Harry",
-    "title": "Silk shirring dress",
-    "pricingOption": 2,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_8.jpeg",
-    "price": 50
-  },
-  {
-    "id": "content-009",
-    "creator": "Ikarus",
-    "title": "Beige shirt with hat",
-    "pricingOption": 2,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_9.jpeg",
-    "price": 5
-  },
-  {
-    "id": "content-010",
-    "creator": "Jennifer",
-    "title": "Red leather evening dress",
-    "pricingOption": 0,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_10.png",
-    "price": 10.5
-  },
-  {
-    "id": "content-011",
-    "creator": "Kiara",
-    "title": "Runner pants",
-    "pricingOption": 1,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_11.png",
-    "price": 20
-  },
-  {
-    "id": "content-012",
-    "creator": "Lonnie",
-    "title": "Futuristic garment",
-    "pricingOption": 1,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_12.png",
-    "price": 20
-  },
-  {
-    "id": "content-013",
-    "creator": "Marie",
-    "title": "Silk dress",
-    "pricingOption": 0,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_13.png",
-    "price": 65
-  },
-  {
-    "id": "content-014",
-    "creator": "Nate",
-    "title": "Swimsuit",
-    "pricingOption": 1,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_14.png",
-    "price": 100
-  },
-  {
-    "id": "content-015",
-    "creator": "Obama",
-    "title": "Simple knit",
-    "pricingOption": 1,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_15.jpeg",
-    "price": 10
-  },
-  {
-    "id": "content-016",
-    "creator": "Pierre",
-    "title": "Velvet blazer",
-    "pricingOption": 1,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_16.png",
-    "price": 70
-  },
-  {
-    "id": "content-017",
-    "creator": "Quinn",
-    "title": "Red tweed jacket",
-    "pricingOption": 2,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_17.png",
-    "price": 1
-  },
-  {
-    "id": "content-018",
-    "creator": "Randy",
-    "title": "Violet underwares",
-    "pricingOption": 0,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_18.png",
-    "price": 100.5
-  },
-  {
-    "id": "content-019",
-    "creator": "Suzie",
-    "title": "Deep green wide pants",
-    "pricingOption": 1,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_19.png",
-    "price": 90
-  },
-  {
-    "id": "content-020",
-    "creator": "Tony",
-    "title": "Floral pattern hat",
-    "pricingOption": 2,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_20.png",
-    "price": 100
-  },
-  {
-    "id": "content-021",
-    "creator": "Umar",
-    "title": "Cargo pants",
-    "pricingOption": 1,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_21.png",
-    "price": 20
-  },
-  {
-    "id": "content-022",
-    "creator": "Vivian",
-    "title": "Stadium jacket",
-    "pricingOption": 1,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_22.png",
-    "price": 45
-  },
-  {
-    "id": "content-023",
-    "creator": "Walter",
-    "title": "Open neck dress",
-    "pricingOption": 0,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_23.png",
-    "price": 10
-  },
-  {
-    "id": "content-024",
-    "creator": "Xavier",
-    "title": "Black leather costume",
-    "pricingOption": 1,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_24.png",
-    "price": 13
-  },
-  {
-    "id": "content-025",
-    "creator": "Yves",
-    "title": "Pink cardigan",
-    "pricingOption": 0,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_25.png",
-    "price": 5
-  },
-  {
-    "id": "content-026",
-    "creator": "Zane",
-    "title": "Polo style uniform",
-    "pricingOption": 1,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_26.png",
-    "price": 200
-  },
-  {
-    "id": "content-027",
-    "creator": "Adam",
-    "title": "Grunge look",
-    "pricingOption": 0,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_27.png",
-    "price": 300
-  },
-  {
-    "id": "content-028",
-    "creator": "Catlin",
-    "title": "White top",
-    "pricingOption": 1,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_28.png",
-    "price": 80
-  },
-  {
-    "id": "content-029",
-    "creator": "Catlin",
-    "title": "White simple dress with jacket",
-    "pricingOption": 2,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_29.png",
-    "price": 13
-  },
-  {
-    "id": "content-030",
-    "creator": "Felix",
-    "title": "Satin dress",
-    "pricingOption": 1,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_30.png",
-    "price": 1200.5
-  },
-  {
-    "id": "content-031",
-    "creator": "Vivian",
-    "title": "Workware jacket",
-    "pricingOption": 2,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_31.png",
-    "price": 450
-  },
-  {
-    "id": "content-032",
-    "creator": "Zane",
-    "title": "Denim mini dress2",
-    "pricingOption": 1,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_32.png",
-    "price": 30
-  },
-  {
-    "id": "content-033",
-    "creator": "John",
-    "title": "Casual look",
-    "pricingOption": 1,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_33.png",
-    "price": 10
-  },
-  {
-    "id": "content-034",
-    "creator": "Haily",
-    "title": "Yellow striped shirt",
-    "pricingOption": 0,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_34.png",
-    "price": 250
-  },
-  {
-    "id": "content-035",
-    "creator": "Dion",
-    "title": "Argyle pattern top",
-    "pricingOption": 0,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_35.png",
-    "price": 90
-  },
-  {
-    "id": "content-036",
-    "creator": "Sean",
-    "title": "Vivid orange jumpsuit",
-    "pricingOption": 0,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_36.png",
-    "price": 70
-  },
-  {
-    "id": "content-037",
-    "creator": "Jake",
-    "title": "Underware",
-    "pricingOption": 1,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_37.jpeg",
-    "price": 33
-  },
-  {
-    "id": "content-038",
-    "creator": "Molly",
-    "title": "Winter jacket",
-    "pricingOption": 1,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_38.png",
-    "price": 10
-  },
-  {
-    "id": "content-039",
-    "creator": "MJ",
-    "title": "Double coat",
-    "pricingOption": 0,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_39.jpeg",
-    "price": 1050
-  },
-  {
-    "id": "content-040",
-    "creator": "Sam",
-    "title": "Color pop dress",
-    "pricingOption": 1,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_40.png",
-    "price": 10000
-  },
-  {
-    "id": "content-041",
-    "creator": "Obama",
-    "title": "Blue square neck dress",
-    "pricingOption": 0,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_41.png",
-    "price": 30
-  },
-  {
-    "id": "content-042",
-    "creator": "Pierre",
-    "title": "Green coat",
-    "pricingOption": 1,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_1.jpeg",
-    "price": 50
-  },
-  {
-    "id": "content-043",
-    "creator": "Quinn",
-    "title": "Anorak jacket",
-    "pricingOption": 2,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_2.png",
-    "price": 85
-  },
-  {
-    "id": "content-044",
-    "creator": "Randy",
-    "title": "White mini clutch",
-    "pricingOption": 2,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_3.jpeg",
-    "price": 30
-  },
-  {
-    "id": "content-045",
-    "creator": "Rhonda",
-    "title": "Red check pattern dress",
-    "pricingOption": 1,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_4.png",
-    "price": 250
-  },
-  {
-    "id": "content-046",
-    "creator": "Kiara",
-    "title": "Gymware",
-    "pricingOption": 2,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_5.png",
-    "price": 100
-  },
-  {
-    "id": "content-047",
-    "creator": "Xavier",
-    "title": "Denim suit",
-    "pricingOption": 1,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_6.png",
-    "price": 35
-  },
-  {
-    "id": "content-048",
-    "creator": "Pierre",
-    "title": "Jean",
-    "pricingOption": 1,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_7.jpeg",
-    "price": 90
-  },
-  {
-    "id": "content-049",
-    "creator": "Wesley",
-    "title": "Thigh-high white boots",
-    "pricingOption": 0,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_8.jpeg",
-    "price": 100
-  },
-  {
-    "id": "content-050",
-    "creator": "Riley",
-    "title": "Pale denim hat",
-    "pricingOption": 1,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_9.jpeg",
-    "price": 115
-  },
-  {
-    "id": "content-051",
-    "creator": "Joe",
-    "title": "Open neck evening garment",
-    "pricingOption": 0,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_10.png",
-    "price": 50
-  },
-  {
-    "id": "content-052",
-    "creator": "Adam",
-    "title": "Gray leggings",
-    "pricingOption": 1,
-    "imagePath": "https://closetfrontrecruiting.blob.core.windows.net/images/thumbnail_11.png",
-    "price": 70
-  }
-]
+  // API 基础URL
+  const API_URL = 'https://closet-recruiting-api.azurewebsites.net/api/data';
 
   const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState({
@@ -477,9 +59,50 @@ const ProductsList = () => {
     free: false,
     viewOnly: false
   });
+  
+  // 从API获取的产品数据
+  const [products, setProducts] = useState([]);
+  const [isLoadingProducts, setIsLoadingProducts] = useState(false);
+  const [error, setError] = useState(null);
+  
+  // 无限滚动相关状态
+  const [displayedProducts, setDisplayedProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const observerRef = useRef(null);
+  const lastProductRef = useCallback(node => {
+    if (isLoading) return;
+    if (observerRef.current) observerRef.current.disconnect();
+    observerRef.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasMore) {
+        loadMoreProducts();
+      }
+    });
+    if (node) observerRef.current.observe(node);
+  }, [isLoading, hasMore]);
 
+  // 从API获取产品数据的函数
+  const fetchProducts = async () => {
+    setIsLoadingProducts(true);
+    setError(null);
+    
+    try {
+      const response = await fetch(API_URL);
+      if (!response.ok) {
+        throw new Error('Failed to fetch products');
+      }
+      const data = await response.json();
+      setProducts(data);
+    } catch (err) {
+      setError(err.message);
+      console.error('Error fetching products:', err);
+    } finally {
+      setIsLoadingProducts(false);
+    }
+  };
+  
   // 将pricingOption转换为与原UI兼容的属性
-  const enhancedProducts = mockProducts.map(product => {
+  const enhancedProducts = products.map(product => {
     let isPaid = false;
     let isFree = false;
     let isViewOnly = false;
@@ -494,8 +117,12 @@ const ProductsList = () => {
       isViewOnly = true;
     }
     
+    // 为了防止图片加载失败，使用picsum.photos作为备用
+    const safeImagePath = product.imagePath || `https://picsum.photos/seed/${product.id}/300/400`;
+    
     return {
       ...product,
+      imagePath: safeImagePath,
       isPaid,
       isFree,
       isViewOnly
@@ -547,7 +174,103 @@ const ProductsList = () => {
       viewOnly: false
     });
     setSearchTerm('');
+    // 重置显示的产品和加载状态
+    setDisplayedProducts([]);
+    setHasMore(true);
   };
+  
+  // 模拟加载更多产品的函数
+  const loadMoreProducts = async () => {
+    if (isLoading) return;
+    
+    setIsLoading(true);
+    // 模拟网络请求延迟
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    const currentLength = displayedProducts.length;
+    const nextBatch = filteredProducts.slice(currentLength, currentLength + 8);
+    
+    if (nextBatch.length > 0) {
+      setDisplayedProducts(prev => [...prev, ...nextBatch]);
+    } else {
+      setHasMore(false);
+    }
+    
+    setIsLoading(false);
+  };
+  
+  // 当组件挂载时获取产品数据
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+  
+  // 当筛选条件变化时，重置显示的产品
+  useEffect(() => {
+    setDisplayedProducts([]);
+    setHasMore(true);
+    setIsLoading(false);
+  }, [filters, searchTerm, products]); // 当产品数据变化时也重置
+  
+  // 当初始产品数据加载完成且displayedProducts为空时，加载第一批产品
+  useEffect(() => {
+    if (products.length > 0 && displayedProducts.length === 0) {
+      loadMoreProducts();
+    }
+  }, [displayedProducts.length, products.length]);
+  
+  // 骨架屏组件
+  const ProductSkeleton = () => (
+    <Box sx={{ 
+      bgcolor: '#1E1E1E', 
+      borderRadius: 2, 
+      overflow: 'hidden', 
+      border: '1px solid rgba(255,255,255,0.1)', 
+      width: { xs: '90%', sm: 280 },
+      maxWidth: '100%',
+      animation: 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+    }}>
+      <Box sx={{ 
+        height: 300, 
+        bgcolor: 'rgba(255,255,255,0.05)',
+        position: 'relative' 
+      }}>
+        {/* 骨架屏上的状态标签占位 */}
+        <Box sx={{ 
+          position: 'absolute', 
+          top: 10, 
+          left: 10, 
+          width: 70, 
+          height: 24, 
+          bgcolor: 'rgba(255,255,255,0.08)',
+          borderRadius: 2 
+        }} />
+        {/* 骨架屏上的右上角按钮占位 */}
+        <Box sx={{ 
+          position: 'absolute', 
+          top: 10, 
+          right: 10, 
+          display: 'flex', 
+          gap: 8 
+        }}>
+          <Box sx={{ width: 36, height: 36, bgcolor: 'rgba(255,255,255,0.08)', borderRadius: '50%' }} />
+          <Box sx={{ width: 36, height: 36, bgcolor: 'rgba(255,255,255,0.08)', borderRadius: '50%' }} />
+        </Box>
+      </Box>
+      <Box sx={{ p: 3 }}>
+        {/* 骨架屏上的创作者名称占位 */}
+        <Box sx={{ width: 100, height: 16, bgcolor: 'rgba(255,255,255,0.08)', borderRadius: 1, mb: 2 }} />
+        {/* 骨架屏上的产品标题占位 */}
+        <Box sx={{ width: '80%', height: 20, bgcolor: 'rgba(255,255,255,0.1)', borderRadius: 1, mb: 3 }} />
+        {/* 骨架屏上的价格占位 */}
+        <Box sx={{ width: 60, height: 18, bgcolor: 'rgba(255,215,0,0.2)', borderRadius: 1, mb: 2 }} />
+        {/* 骨架屏上的统计信息占位 */}
+        <Box sx={{ display: 'flex', gap: 16 }}>
+          <Box sx={{ width: 80, height: 14, bgcolor: 'rgba(255,255,255,0.05)', borderRadius: 1 }} />
+          <Box sx={{ width: 80, height: 14, bgcolor: 'rgba(255,255,255,0.05)', borderRadius: 1 }} />
+        </Box>
+      </Box>
+    </Box>
+  );
 
   return (
     <ThemeProvider theme={darkTheme}>
@@ -671,31 +394,35 @@ const ProductsList = () => {
                 Contents List
               </Typography>
             </Box>
-            {filteredProducts.length > 0 ? (
-              <Grid container spacing={4} sx={{ maxWidth: '1250px', mx: 'auto', justifyContent: 'center' }}>
-                {filteredProducts.map(product => (
-                  <Grid 
-                    item 
-                    xs={12} 
-                    sm={6} 
-                    md={4} 
-                    lg={3} 
-                    xl={3} 
-                    key={product.id}
-                    sx={{
-                      minWidth: 0, // 防止flex项目溢出
-                      display: 'flex',
-                      justifyContent: 'center'
-                    }}
-                  >
-                    <Box sx={{ 
-                      bgcolor: '#1E1E1E', 
-                      borderRadius: 2, 
-                      overflow: 'hidden', 
-                      border: '1px solid rgba(255,255,255,0.1)', 
-                      width: { xs: '90%', sm: 280 }, // 在xs屏幕上使用百分比宽度，其他屏幕使用固定宽度
-                      maxWidth: '100%', // 确保在小屏幕上不会溢出
-                    }}>
+            {displayedProducts.length > 0 || isLoading ? (
+              <>
+                {/* 显示已加载的产品 */}
+                {displayedProducts.length > 0 && (
+                  <Grid container spacing={4} sx={{ maxWidth: '1250px', mx: 'auto', justifyContent: 'center' }}>
+                    {displayedProducts.map((product, index) => (
+                      <Grid 
+                        item 
+                        xs={12} 
+                        sm={6} 
+                        md={4} 
+                        lg={3} 
+                        xl={3} 
+                        key={product.id}
+                        ref={index === displayedProducts.length - 1 ? lastProductRef : null}
+                        sx={{
+                          minWidth: 0, // 防止flex项目溢出
+                          display: 'flex',
+                          justifyContent: 'center'
+                        }}
+                      >
+                        <Box sx={{ 
+                          bgcolor: '#1E1E1E', 
+                          borderRadius: 2, 
+                          overflow: 'hidden', 
+                          border: '1px solid rgba(255,255,255,0.1)', 
+                          width: { xs: '90%', sm: 280 }, // 在xs屏幕上使用百分比宽度，其他屏幕使用固定宽度
+                          maxWidth: '100%', // 确保在小屏幕上不会溢出
+                        }}>
                       <Box sx={{ position: 'relative', height: 300, overflow: 'hidden' }}>
                         <img
                           src={product.imagePath}
@@ -756,17 +483,50 @@ const ProductsList = () => {
                         </Typography>
                         <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
                           <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.5)' }}>
-                            {product.views} views
+                            100+ views
                           </Typography>
                           <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.5)' }}>
-                            • {product.favorites} likes
+                            • 25 likes
                           </Typography>
                         </Box>
                       </Box>
                     </Box>
+                    </Grid>
+                    ))}
                   </Grid>
-                ))}
-              </Grid>
+                )}
+                
+                {/* 加载中显示骨架屏 */}
+                {isLoading && (
+                  <Grid container spacing={4} sx={{ maxWidth: '1250px', mx: 'auto', justifyContent: 'center', mt: 4 }}>
+                    {Array.from({ length: 4 }).map((_, index) => (
+                      <Grid 
+                        item 
+                        xs={12} 
+                        sm={6} 
+                        md={4} 
+                        lg={3} 
+                        xl={3} 
+                        key={`skeleton-${index}`}
+                        sx={{
+                          minWidth: 0, 
+                          display: 'flex',
+                          justifyContent: 'center'
+                        }}
+                      >
+                        <ProductSkeleton />
+                      </Grid>
+                    ))}
+                  </Grid>
+                )}
+                
+                {/* 没有更多产品时的提示 */}
+                {!hasMore && displayedProducts.length > 0 && (
+                  <Typography variant="body2" sx={{ textAlign: 'center', color: 'rgba(255,255,255,0.5)', py: 6 }}>
+                    No more products to load
+                  </Typography>
+                )}
+              </>
             ) : (
               <Typography variant="body1" sx={{ textAlign: 'center', color: 'rgba(255,255,255,0.5)', py: 8 }}>
                 No products match your filters
