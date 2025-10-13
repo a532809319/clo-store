@@ -53,12 +53,28 @@ const ProductsList = () => {
   // API 基础URL
   const API_URL = 'https://closet-recruiting-api.azurewebsites.net/api/data';
 
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filters, setFilters] = useState({
-    paid: false,
-    free: false,
-    viewOnly: false
-  });
+  // 从URL参数初始化状态
+  const initializeStateFromUrl = () => {
+    const params = new URLSearchParams(window.location.search);
+    
+    // 初始化搜索词
+    const initialSearchTerm = params.get('search') || '';
+    
+    // 初始化筛选器
+    const initialFilters = {
+      paid: params.get('paid') === 'true',
+      free: params.get('free') === 'true',
+      viewOnly: params.get('viewOnly') === 'true'
+    };
+    
+    return { initialSearchTerm, initialFilters };
+  };
+  
+  // 初始状态
+  const { initialSearchTerm, initialFilters } = initializeStateFromUrl();
+  
+  const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
+  const [filters, setFilters] = useState(initialFilters);
   
   // 从API获取的产品数据
   const [products, setProducts] = useState([]);
@@ -81,6 +97,25 @@ const ProductsList = () => {
     if (node) observerRef.current.observe(node);
   }, [isLoading, hasMore]);
 
+  // 更新URL参数的函数
+  const updateUrlParams = (newSearchTerm, newFilters) => {
+    const params = new URLSearchParams();
+    
+    // 添加搜索参数
+    if (newSearchTerm) {
+      params.set('search', newSearchTerm);
+    }
+    
+    // 添加筛选参数
+    if (newFilters.paid) params.set('paid', 'true');
+    if (newFilters.free) params.set('free', 'true');
+    if (newFilters.viewOnly) params.set('viewOnly', 'true');
+    
+    // 更新URL而不刷新页面
+    const newUrl = `${window.location.pathname}${params.toString() ? '?' + params.toString() : ''}`;
+    window.history.replaceState({}, '', newUrl);
+  };
+  
   // 从API获取产品数据的函数
   const fetchProducts = async () => {
     setIsLoadingProducts(true);
@@ -161,19 +196,26 @@ const ProductsList = () => {
   });
 
   const handleFilterChange = (filterType) => {
-    setFilters({
+    const newFilters = {
       ...filters,
       [filterType]: !filters[filterType]
-    });
+    };
+    setFilters(newFilters);
+    updateUrlParams(searchTerm, newFilters);
   };
 
   const handleResetFilters = () => {
-    setFilters({
+    const newFilters = {
       paid: false,
       free: false,
       viewOnly: false
-    });
-    setSearchTerm('');
+    };
+    const newSearchTerm = '';
+    
+    setFilters(newFilters);
+    setSearchTerm(newSearchTerm);
+    updateUrlParams(newSearchTerm, newFilters);
+    
     // 重置显示的产品和加载状态
     setDisplayedProducts([]);
     setHasMore(true);
@@ -293,7 +335,11 @@ const ProductsList = () => {
               variant="outlined"
               fullWidth
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => {
+                const newSearchTerm = e.target.value;
+                setSearchTerm(newSearchTerm);
+                updateUrlParams(newSearchTerm, filters);
+              }}
               sx={{
                 '& .MuiInputBase-input': {
                   color: '#fff',
