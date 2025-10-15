@@ -124,6 +124,7 @@ const ProductsList = () => {
   
   // 从API获取产品数据的函数
   const fetchProducts = async () => {
+    console.log('开始获取产品数据');
     setIsLoadingProducts(true);
     setError(null);
     
@@ -133,17 +134,20 @@ const ProductsList = () => {
         throw new Error('Failed to fetch products');
       }
       const data = await response.json();
+      console.log('成功获取产品数据:', data);
       setProducts(data);
     } catch (err) {
       setError(err.message);
       console.error('Error fetching products:', err);
     } finally {
+      console.log('产品数据获取完成，加载状态:', isLoadingProducts);
       setIsLoadingProducts(false);
     }
   };
   
   // 增强产品数据，确保包含所有必要的属性
   const enhancedProducts = products.map(product => {
+    console.log('正在处理产品数据:', product.title || product.id);
     let isPaid = false;
     let isFree = false;
     let isViewOnly = false;
@@ -251,7 +255,11 @@ const ProductsList = () => {
     // 价格范围过滤 - 仅在Paid选项选中时应用
     const matchesPriceRange = !filters.paid || (product.price >= priceRange[0] && product.price <= priceRange[1]);
     
-    return matchesSearch && matchesFilters && matchesPriceRange;
+    const result = matchesSearch && matchesFilters && matchesPriceRange;
+    if (result) {
+      console.log('产品通过筛选:', product.title || product.id);
+    }
+    return result;
   }).sort((a, b) => {
     // 排序逻辑
     if (sortBy === 'name') {
@@ -268,6 +276,7 @@ const ProductsList = () => {
   });
 
   const handleFilterChange = (filterType) => {
+    console.log('筛选条件变更:', filterType, '当前值:', filters[filterType]);
     const newFilters = {
       ...filters,
       [filterType]: !filters[filterType]
@@ -277,6 +286,7 @@ const ProductsList = () => {
   };
 
   const handleResetFilters = () => {
+    console.log('重置所有筛选条件');
     const newFilters = {
       paid: false,
       free: false,
@@ -298,6 +308,7 @@ const ProductsList = () => {
   // 处理排序变化
   const handleSortChange = (event) => {
     const newSortBy = event.target.value;
+    console.log('排序方式变更为:', newSortBy);
     setSortBy(newSortBy);
     // 排序变化时，重置显示的产品和加载状态
     setDisplayedProducts([]);
@@ -306,11 +317,13 @@ const ProductsList = () => {
   
   // 处理价格范围变化
   const handlePriceRangeChange = (event, newValue) => {
+    console.log('价格范围变化中:', newValue);
     setPriceRange(newValue);
   };
   
   // 价格范围变化完成（拖动释放后）
   const handlePriceRangeChangeCommitted = () => {
+    console.log('价格范围确定:', priceRange);
     // 价格范围变化完成后，重置显示的产品和加载状态
     setDisplayedProducts([]);
     setHasMore(true);
@@ -322,12 +335,14 @@ const ProductsList = () => {
   const loadMoreProducts = useCallback(async () => {
     if (isLoading) return;
     
+    console.log('开始加载更多产品，当前已显示:', displayedProducts.length, '条');
     setIsLoading(true);
     // 模拟网络请求延迟
     await new Promise(resolve => setTimeout(resolve, 1500));
     
     // 检查是否有匹配的产品
     if (filteredProducts.length === 0) {
+      console.log('没有匹配的产品');
       // 没有匹配的产品，保持displayedProducts为空，让UI的else分支处理无结果的情况
       // 不设置hasMore为false，让UI正确显示"No products match your filters"
     } else {
@@ -335,8 +350,10 @@ const ProductsList = () => {
       const nextBatch = filteredProducts.slice(currentLength, currentLength + 8);
       
       if (nextBatch.length > 0) {
+        console.log('成功加载到更多产品，新增:', nextBatch.length, '条');
         setDisplayedProducts(prev => [...prev, ...nextBatch]);
       } else {
+        console.log('已加载所有产品，无更多数据');
         setHasMore(false);
       }
     }
@@ -445,7 +462,7 @@ const ProductsList = () => {
               onChange={(e) => {
                 const newSearchTerm = e.target.value;
                 // 添加搜索日志
-                console.log('搜索关键词:', newSearchTerm);
+                console.log('搜索关键词变更:', newSearchTerm);
                 setSearchTerm(newSearchTerm);
                 updateUrlParams(newSearchTerm, filters);
               }}
