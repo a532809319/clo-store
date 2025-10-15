@@ -147,7 +147,7 @@ const ProductsList = () => {
   
   // 增强产品数据，确保包含所有必要的属性
   const enhancedProducts = products.map(product => {
-    console.log('正在处理产品数据:', product.title || product.id);
+    // console.log('正在处理产品数据:', product.title || product.id);
     let isPaid = false;
     let isFree = false;
     let isViewOnly = false;
